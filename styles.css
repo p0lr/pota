@@ -1,0 +1,84 @@
+:root{
+  --bg: #f4faf9;
+  --card: #ffffff;
+  --accent: #0d9488; /* teal/sea color */
+  --accent-dark: #0b7f73;
+  --muted: #6b7280;
+  --text: #0f172a;
+  --glass: rgba(13,148,136,0.06);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family: Inter, Roboto, -apple-system, system-ui, "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(180deg,#f7fcfb 0%, #f4faf9 100%);
+  color:var(--text);
+  margin:0;padding:28px;
+  -webkit-font-smoothing:antialiased;
+}
+
+.container{
+  max-width:980px;margin:0 auto;background:var(--card);padding:28px;border-radius:12px;
+  box-shadow: 0 10px 30px rgba(11,22,26,0.08);
+  border: 1px solid rgba(13,148,136,0.06);
+}
+
+h1{margin:0 0 16px 0;font-size:22px}
+
+.field{display:block;margin:14px 0}
+.field span{display:block;font-weight:600;margin-bottom:8px;color:var(--text)}
+
+input[type=text], textarea, input[type=file]{
+  width:100%;padding:10px 12px;border:1px solid #e6eef0;border-radius:10px;font-size:14px;background:#fbffff
+}
+
+textarea{height:380px;font-family:SFMono-Regular,Menlo,monospace;white-space:pre-wrap;resize:vertical}
+
+.buttons{display:flex;gap:12px;align-items:center;margin:12px 0}
+
+button{
+  background:linear-gradient(180deg,var(--accent),var(--accent-dark));
+  color:white;padding:10px 16px;border-radius:10px;border:0;cursor:pointer;font-weight:600;
+  box-shadow: 0 6px 18px rgba(13,148,136,0.12);
+}
+button:hover{transform:translateY(-1px)}
+
+a.hidden{display:none}
+
+#downloadLink{display:inline-block;padding:10px 12px;border-radius:10px;background:transparent;border:1px solid rgba(13,148,136,0.12);color:var(--accent);text-decoration:none}
+#downloadLink:hover{background:var(--glass)}
+
+#log{background:#0b1220;color:#e6eef6;padding:12px;border-radius:10px;height:140px;overflow:auto;border:1px solid rgba(11,18,32,0.06)}
+
+section h2{margin:18px 0 8px 0;font-size:16px}
+
+footer{margin-top:18px;color:var(--muted);font-size:13px}
+
+@media (max-width:640px){
+  .container{padding:18px}
+  textarea{height:260px}
+  button, #downloadLink{padding:10px}
+}
+
+/* Globe container */
+#globe{
+  width:100%;
+  height:520px;
+  border-radius:10px;
+  border:1px solid rgba(11,18,32,0.06);
+  margin-top:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  position:relative;
+}
+
+#globe canvas{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:contain;
+}
+

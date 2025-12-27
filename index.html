@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>POTA ADIF Prep</title>
+  <link rel="stylesheet" href="styles.css">
+  <meta name="description" content="Upload an ADI (.adi) file and add POTA park reference for POTA.app submission">
+</head>
+<body>
+  <main class="container">
+    <h1>POTA ADIF Prep</h1>
+
+    <label class="field">
+      <span>ADIF/.adi file</span>
+      <input id="fileInput" type="file" accept=".adi,.adi.txt,text/plain" />
+    </label>
+
+    <label class="field">
+      <span>Park Reference (e.g. K-1234)</span>
+      <input id="parkRef" type="text" placeholder="K-1234" />
+    </label>
+
+    <!-- per-record MY_GRIDSQUARE values are used from the ADIF file; no manual input required -->
+
+    <div class="buttons">
+      <button id="processBtn">Process ADI</button>
+      <a id="downloadLink" class="hidden" download="pota_ready.adi">Download ADI</a>
+    </div>
+
+    <section>
+      <h2>Preview</h2>
+      <textarea id="preview" readonly></textarea>
+    </section>
+
+    <section>
+      <h2>Map</h2>
+      <div id="globe" aria-label="POTA globe"></div>
+    </section>
+
+    <section>
+      <h2>Summary</h2>
+      <div id="summary">
+        <p><strong>Total contacts (original):</strong> <span id="totalOriginal">0</span></p>
+        <p><strong>Duplicates removed:</strong> <span id="totalRemoved">0</span></p>
+        <p><strong>Unique contacts:</strong> <span id="totalUnique">0</span></p>
+        <div>
+          <strong>Duplicate calls:</strong>
+          <ul id="duplicatesList"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Logs</h2>
+      <pre id="log"></pre>
+    </section>
+
+    <footer>
+      <small>Generates ADIF with a header-level <code>POTA_REF</code> field and injects <code>POTA_REF</code> into each QSO record for POTA.app upload.</small>
+    </footer>
+  </main>
+
+  <script src="https://unpkg.com/globe.gl@2.22.1/dist/globe.gl.min.js"></script>
+  <script>
+    console.log('globe.gl loaded?', !!window.Globe, !!window.GlobeGL, window.Globe || window.GlobeGL);
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
