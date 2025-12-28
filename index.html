@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ADI Globe Mapper</title>
+  <title>Ham Radio Log Mapper</title>
   <style>
     body {
       background: #181a1b;
@@ -28,11 +28,20 @@
       margin-bottom: 1.5em;
       text-align: center;
     }
-    .controls {
+    #controls {
+      position: fixed;
+      top: 32px;
+      left: 32px;
+      background: rgba(0,0,0,0.7);
+      padding: 14px 24px;
+      border-radius: 14px;
+      box-shadow: 0 4px 32px #000b, 0 0 24px #00f2;
       display: flex;
-      gap: 1em;
+      gap: 16px;
+      z-index: 10;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
+      backdrop-filter: blur(2px);
     }
     input[type="file"] {
       color: #e0e0e0;
@@ -86,8 +95,7 @@
 </head>
 <body>
   <div id="container">
-    <h1>ADI Globe Mapper</h1>
-    <div class="controls">
+    <div id="controls">
       <input type="file" id="adiFile" accept=".adi,.adif,.txt" />
       <button id="mapBtn" disabled>Map</button>
     </div>
