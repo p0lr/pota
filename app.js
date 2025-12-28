@@ -149,9 +149,10 @@ function renderGlobe(contacts) {
         .polygonSideColor(() => 'rgba(0,0,0,0)')
         .polygonStrokeColor(f => f.properties && f.properties._layer === 'state' ? '#cccccc' : '#888')
         .polygonAltitude(f => f.properties && f.properties._layer === 'state' ? 0.004 : 0.003);
-      // Re-apply arcs and points after polygons load
-      if (globe.__pendingArcs) globe.arcsData(globe.__pendingArcs);
+      // Mark polygons loaded and always re-apply arcs/points
+      globe.__polygonsLoaded = true;
       if (globe.__pendingPoints) globe.pointsData(globe.__pendingPoints);
+      if (globe.__pendingArcs) globe.arcsData(globe.__pendingArcs);
     });
   }
   const arcs = [];
@@ -174,8 +175,14 @@ function renderGlobe(contacts) {
   });
   globe.__pendingPoints = points;
   globe.__pendingArcs = arcs;
-  globe.pointsData(points);
-  globe.arcsData(arcs);
+  if (globe.__polygonsLoaded) {
+    globe.pointsData(points);
+    globe.arcsData(arcs);
+  } else {
+    // Set immediately, will be re-applied after polygons load
+    globe.pointsData(points);
+    globe.arcsData(arcs);
+  }
   if (points.length) {
     const originPoint = points.find(p => p.label && p.label.startsWith('My:')) || points[0];
     globe.pointOfView({ lat: originPoint.lat, lng: originPoint.lng, altitude: 2.5 }, 1000);
