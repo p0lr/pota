@@ -109,5 +109,21 @@
   </div>
   <script src="https://unpkg.com/globe.gl@2.32.6/dist/globe.gl.min.js"></script>
   <script src="app.js"></script>
+  <script>
+    // Responsive resizing for the globe canvas
+    function resizeGlobe() {
+      const globeDiv = document.getElementById('globe');
+      if (!globeDiv) return;
+      globeDiv.style.width = window.innerWidth + 'px';
+      globeDiv.style.height = window.innerHeight + 'px';
+      // If Globe.gl instance is available, trigger its resize
+      if (window.globe && typeof window.globe.width === 'function') {
+        window.globe.width(window.innerWidth);
+        window.globe.height(window.innerHeight);
+      }
+    }
+    window.addEventListener('resize', resizeGlobe);
+    window.addEventListener('DOMContentLoaded', resizeGlobe);
+  </script>
 </body>
 </html>
