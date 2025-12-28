@@ -1,7 +1,7 @@
 {
-    "name": "worker-name",
+    "name": "potalogs-net",
     "compatibility_date": "2025-12-28",
     "assets": {
-        "directory": "./dist"
+        "directory": "./"
     }
 }
