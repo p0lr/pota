@@ -6,16 +6,7 @@ window.addEventListener('unhandledrejection', e => console.error('Unhandled reje
 (function(){
   console.log('app IIFE start');
   const fileInput = document.getElementById('fileInput');
-  const parkRefInput = document.getElementById('parkRef');
   const processBtn = document.getElementById('processBtn');
-  const preview = document.getElementById('preview');
-  const logEl = document.getElementById('log');
-  const downloadLink = document.getElementById('downloadLink');
-
-  function log(...args){
-    logEl.textContent += args.join(' ') + '\n';
-    logEl.scrollTop = logEl.scrollHeight;
-  }
 
   // Parse ADIF into header (array of {tag,value}) and records (array of {fields: [{tag,value}, ...]})
   function parseADIF(text){
