@@ -322,90 +322,9 @@ window.addEventListener('unhandledrejection', e => console.error('Unhandled reje
   }
 
   function handleFile(text, parkRef){
-    log('Parsing ADIF...');
     const parsed = parseADIF(text);
-    log(`Header tags: ${parsed.header.map(h=>h.tag).filter(Boolean).join(', ')}`);
-    log(`Records parsed: ${parsed.records.length}`);
-
     // Remove duplicates by CALL
-    const dedupeResult = dedupeRecords(parsed.records);
-    log(`Contacts (original): ${dedupeResult.before}`);
-    log(`Duplicates removed: ${dedupeResult.removed}`);
-    log(`Contacts (unique): ${dedupeResult.after}`);
-
-    // replace parsed.records with deduped list
-    parsed.records = dedupeResult.deduped;
-
-    // Update the new Summary UI elements with counts and duplicates
-    const totalOriginalEl = document.getElementById('totalOriginal');
-    const totalRemovedEl = document.getElementById('totalRemoved');
-    const totalUniqueEl = document.getElementById('totalUnique');
-    const duplicatesListEl = document.getElementById('duplicatesList');
-    if(totalOriginalEl) totalOriginalEl.textContent = String(dedupeResult.before);
-    if(totalRemovedEl) totalRemovedEl.textContent = String(dedupeResult.removed);
-    if(totalUniqueEl) totalUniqueEl.textContent = String(dedupeResult.after);
-    if(duplicatesListEl){
-      duplicatesListEl.innerHTML = '';
-      if(dedupeResult.duplicateSummary && dedupeResult.duplicateSummary.length){
-        dedupeResult.duplicateSummary.forEach(d => {
-          const li = document.createElement('li');
-          li.textContent = `${d.call} — ${d.count} entries (removed ${d.removed})`;
-          duplicatesListEl.appendChild(li);
-        });
-      } else {
-        const li = document.createElement('li');
-        li.textContent = 'No duplicate calls found.';
-        duplicatesListEl.appendChild(li);
-      }
-    }
-
-    // Determine station callsign for filename: prefer STATION_CALLSIGN in first record, then header STATION_CALLSIGN, then CALL, then MY_CALL
-    function findHeaderTag(tagNames){
-      tagNames = Array.isArray(tagNames) ? tagNames : [tagNames];
-      for(const t of tagNames){
-        const h = parsed.header.find(x => x.tag && x.tag.toUpperCase() === t.toUpperCase());
-        if(h && String(h.value || '').trim().length) return String(h.value).trim();
-      }
-      return null;
-    }
-
-    function findFirstRecordTag(tagName){
-      if(!parsed.records || parsed.records.length === 0) return null;
-      const f = parsed.records[0].fields.find(x => x.tag && x.tag.toUpperCase() === tagName.toUpperCase());
-      return f && String(f.value || '').trim().length ? String(f.value).trim() : null;
-    }
-
-    let stationCall = findFirstRecordTag('STATION_CALLSIGN') || findHeaderTag(['STATION_CALLSIGN','CALL','MY_CALL']) || 'UNKNOWN';
-    stationCall = stationCall.toUpperCase().replace(/\s+/g,'');
-
-    // Find park reference from MY_SIG_INFO (first record with value)
-    function findFirstRecordParkRef(){
-      for(const rec of parsed.records){
-        const f = rec.fields.find(x => x.tag && x.tag.toUpperCase() === 'MY_SIG_INFO');
-        if(f && String(f.value || '').trim().length) return String(f.value).trim();
-      }
-      return '';
-    }
-    const parkRef = findFirstRecordParkRef();
-
-    // Inject STATION_CALLSIGN into each record if missing
-    parsed.records.forEach(rec => {
-      const hasStation = rec.fields.some(f => f.tag && f.tag.toUpperCase() === 'STATION_CALLSIGN');
-      if(!hasStation){
-        rec.fields.push({tag: 'STATION_CALLSIGN', value: stationCall});
-      }
-    });
-
-    // ...existing code...
-
-    // Use parkRef for ADIF and filename
-    // ...existing code...
-    const parkPart = parkRef && parkRef.length ? parkRef.replace(/\s+/g,'') : 'NOPARK';
-    const out = buildADIF(parsed, parkRef);
-    // ...existing code...
-    const filename = `${stationCall}_${ymd.year}-${ymd.month}-${ymd.day}_${parkPart}.adi`;
-    // ...existing code...
-
+    parsed.records = dedupeRecords(parsed.records);
     // Render globe arcs per record using MY_GRIDSQUARE -> GRIDSQUARE
     try{
       const contacts = parsed.records
