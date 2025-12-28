@@ -1,56 +1,21 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ADI Map</title>
+  <meta charset="UTF-8">
+  <title>ADI Globe Mapper</title>
   <link rel="stylesheet" href="styles.css">
-  <meta name="description" content="Upload an ADI (.adi) file and add POTA park reference for POTA.app submission">
 </head>
 <body>
-  <main class="container">
-    <h1>ADI Map</h1>
-
-    <div class="field" style="display: flex; align-items: center; gap: 0.5em;">
-      <input id="fileInput" type="file" accept=".adi,.adi.txt,text/plain" />
-      <button id="processBtn" type="button">Map</button>
+  <div id="container">
+    <h1>ADI Globe Mapper</h1>
+    <div class="controls">
+      <input type="file" id="adiFile" accept=".adi,.adif,.txt" />
+      <button id="mapBtn" disabled>Map</button>
     </div>
-
-
-
-    <!-- per-record MY_GRIDSQUARE values are used from the ADIF file; no manual input required -->
-
-
-
-
-
-    <section>
-      <h2>Map</h2>
-      <div id="globe" aria-label="POTA globe"></div>
-    </section>
-
-    <section>
-      <h2>Summary</h2>
-      <div id="summary">
-        <p><strong>Total contacts (original):</strong> <span id="totalOriginal">0</span></p>
-        <p><strong>Duplicates removed:</strong> <span id="totalRemoved">0</span></p>
-        <p><strong>Unique contacts:</strong> <span id="totalUnique">0</span></p>
-        <div>
-          <strong>Duplicate calls:</strong>
-          <ul id="duplicatesList"></ul>
-        </div>
-      </div>
-    </section>
-
-
-
-
-  </main>
-
-  <script src="https://unpkg.com/globe.gl@2.22.1/dist/globe.gl.min.js"></script>
-  <script>
-    console.log('globe.gl loaded?', !!window.Globe, !!window.GlobeGL, window.Globe || window.GlobeGL);
-  </script>
+    <div id="globe"></div>
+  </div>
+  <script src="https://unpkg.com/three@0.150.1/build/three.min.js"></script>
+  <script src="https://unpkg.com/globe.gl@2.32.6/dist/globe.gl.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
