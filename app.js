@@ -19,6 +19,32 @@ window.addEventListener('unhandledrejection', e => console.error('Unhandled reje
 
   // Parse ADIF into header (array of {tag,value}) and records (array of {fields: [{tag,value}, ...]})
   function parseADIF(text){
+      // Deduplicate records by CALL, preferring the most complete
+      function dedupeRecords(records){
+        const groups = new Map();
+        records.forEach((rec, idx) => {
+          const callField = rec.fields.find(f => f.tag && f.tag.toUpperCase() === 'CALL');
+          const call = callField ? String(callField.value).trim().toUpperCase() : null;
+          const filled = rec.fields.reduce((n, f) => n + (String(f.value || '').trim().length > 0 ? 1 : 0), 0);
+          if(!call){
+            const key = `__NO_CALL_${idx}`;
+            groups.set(key, [{rec, filled, call: null}]);
+          } else {
+            if(!groups.has(call)) groups.set(call, []);
+            groups.get(call).push({rec, filled, call});
+          }
+        });
+        const deduped = [];
+        groups.forEach((arr, key) => {
+          if(arr.length === 1){
+            deduped.push(arr[0].rec);
+          } else {
+            arr.sort((a, b) => b.filled - a.filled);
+            deduped.push(arr[0].rec);
+          }
+        });
+        return deduped;
+      }
     let i = 0;
     const N = text.length;
     const header = [];
@@ -77,7 +103,7 @@ window.addEventListener('unhandledrejection', e => console.error('Unhandled reje
         }
       }
 
-      if(inHeader){
+          parsed.records = dedupeRecords(parsed.records);
         header.push({tag, value});
       } else {
         currentFields.push({tag, value});
@@ -361,6 +387,16 @@ window.addEventListener('unhandledrejection', e => console.error('Unhandled reje
     let stationCall = findFirstRecordTag('STATION_CALLSIGN') || findHeaderTag(['STATION_CALLSIGN','CALL','MY_CALL']) || 'UNKNOWN';
     stationCall = stationCall.toUpperCase().replace(/\s+/g,'');
 
+    // Find park reference from MY_SIG_INFO (first record with value)
+    function findFirstRecordParkRef(){
+      for(const rec of parsed.records){
+        const f = rec.fields.find(x => x.tag && x.tag.toUpperCase() === 'MY_SIG_INFO');
+        if(f && String(f.value || '').trim().length) return String(f.value).trim();
+      }
+      return '';
+    }
+    const parkRef = findFirstRecordParkRef();
+
     // Inject STATION_CALLSIGN into each record if missing
     parsed.records.forEach(rec => {
       const hasStation = rec.fields.some(f => f.tag && f.tag.toUpperCase() === 'STATION_CALLSIGN');
@@ -369,19 +405,33 @@ window.addEventListener('unhandledrejection', e => console.error('Unhandled reje
       }
     });
 
+    // ...existing code...
+
+    // Use parkRef for ADIF and filename
+    // ...existing code...
+    const parkPart = parkRef && parkRef.length ? parkRef.replace(/\s+/g,'') : 'NOPARK';
+    const out = buildADIF(parsed, parkRef);
+    // ...existing code...
+    const filename = `${stationCall}_${ymd.year}-${ymd.month}-${ymd.day}_${parkPart}.adi`;
+    // ...existing code...
+
     // Render globe arcs per record using MY_GRIDSQUARE -> GRIDSQUARE
     try{
-      const contacts = parsed.records.map(rec => {
-        const gridField = rec.fields.find(f => f.tag && ['GRIDSQUARE','GRID','GRIDSQ'].includes(f.tag.toUpperCase()));
-        const callField = rec.fields.find(f => f.tag && f.tag.toUpperCase() === 'CALL');
-        const myGridField = rec.fields.find(f => f.tag && f.tag.toUpperCase() === 'MY_GRIDSQUARE');
-        const grid = gridField ? String(gridField.value).trim() : null;
-        const call = callField ? String(callField.value).trim() : null;
-        const myGrid = myGridField ? String(myGridField.value).trim() : null;
-        const coord = grid ? maidenToLatLon(grid) : null;
-        const myCoord = myGrid ? maidenToLatLon(myGrid) : null;
-        return {grid, call, coord, myGrid, myCoord};
-      }).filter(c => c.coord && c.myCoord);
+      const contacts = parsed.records
+        .map(rec => {
+          const gridField = rec.fields.find(f => f.tag && ['GRIDSQUARE','GRID','GRIDSQ'].includes(f.tag.toUpperCase()));
+          const callField = rec.fields.find(f => f.tag && f.tag.toUpperCase() === 'CALL');
+          const myGridField = rec.fields.find(f => f.tag && f.tag.toUpperCase() === 'MY_GRIDSQUARE');
+          const grid = gridField ? String(gridField.value).trim() : null;
+          const call = callField ? String(callField.value).trim() : null;
+          const myGrid = myGridField ? String(myGridField.value).trim() : null;
+          // Only include if far-side grid is present and non-empty
+          if (!grid) return null;
+          const coord = maidenToLatLon(grid);
+          const myCoord = myGrid ? maidenToLatLon(myGrid) : null;
+          return {grid, call, coord, myGrid, myCoord};
+        })
+        .filter(c => c && c.coord && c.myCoord);
       if(contacts && contacts.length) renderGlobe(contacts);
     }catch(e){
       console.error('Globe render error', e);
