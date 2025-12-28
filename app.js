@@ -287,9 +287,11 @@ window.addEventListener('unhandledrejection', e => console.error('Unhandled reje
   function handleFile(text, parkRef){
     const parsed = parseADIF(text);
     // Remove duplicates by CALL
-    parsed.records = dedupeRecords(parsed.records);
+    const deduped = Array.isArray(parsed.records) ? dedupeRecords(parsed.records) : [];
+    parsed.records = Array.isArray(deduped) ? deduped : [];
     // Render globe arcs per record using MY_GRIDSQUARE -> GRIDSQUARE
     try{
+      if (!Array.isArray(parsed.records)) throw new Error('parsed.records is not an array');
       const contacts = parsed.records
         .map(rec => {
           const gridField = rec.fields.find(f => f.tag && ['GRIDSQUARE','GRID','GRIDSQ'].includes(f.tag.toUpperCase()));
