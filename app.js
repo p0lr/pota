@@ -128,11 +128,9 @@ function renderGlobe(contacts) {
       .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
       .backgroundColor('rgba(0,0,0,0)')
       .showGraticules(true)
-      .arcsData([])
       .arcColor(() => '#ffd700')
       .arcStroke(0.15)
       .arcAltitude(0)
-      .pointsData([])
       .pointAltitude(0)
       .pointColor('color')
       .pointRadius('size');
@@ -151,6 +149,9 @@ function renderGlobe(contacts) {
         .polygonSideColor(() => 'rgba(0,0,0,0)')
         .polygonStrokeColor(f => f.properties && f.properties._layer === 'state' ? '#cccccc' : '#888')
         .polygonAltitude(f => f.properties && f.properties._layer === 'state' ? 0.004 : 0.003);
+      // Re-apply arcs and points after polygons load
+      if (globe.__pendingArcs) globe.arcsData(globe.__pendingArcs);
+      if (globe.__pendingPoints) globe.pointsData(globe.__pendingPoints);
     });
   }
   const arcs = [];
@@ -171,6 +172,8 @@ function renderGlobe(contacts) {
     // End point: green, altitude 0
     points.push({ lat: c.coord.lat, lng: c.coord.lon, label: `${c.call || ''} ${c.grid || ''}`, color: '#00ff00', size: 0.12, altitude: 0 });
   });
+  globe.__pendingPoints = points;
+  globe.__pendingArcs = arcs;
   globe.pointsData(points);
   globe.arcsData(arcs);
   if (points.length) {
