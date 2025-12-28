@@ -10,32 +10,32 @@ window.addEventListener('unhandledrejection', e => console.error('Unhandled reje
 
   // Parse ADIF into header (array of {tag,value}) and records (array of {fields: [{tag,value}, ...]})
   function parseADIF(text){
-      // Deduplicate records by CALL, preferring the most complete
-      function dedupeRecords(records){
-        const groups = new Map();
-        records.forEach((rec, idx) => {
-          const callField = rec.fields.find(f => f.tag && f.tag.toUpperCase() === 'CALL');
-          const call = callField ? String(callField.value).trim().toUpperCase() : null;
-          const filled = rec.fields.reduce((n, f) => n + (String(f.value || '').trim().length > 0 ? 1 : 0), 0);
-          if(!call){
-            const key = `__NO_CALL_${idx}`;
-            groups.set(key, [{rec, filled, call: null}]);
-          } else {
-            if(!groups.has(call)) groups.set(call, []);
-            groups.get(call).push({rec, filled, call});
-          }
-        });
-        const deduped = [];
-        groups.forEach((arr, key) => {
-          if(arr.length === 1){
-            deduped.push(arr[0].rec);
-          } else {
-            arr.sort((a, b) => b.filled - a.filled);
-            deduped.push(arr[0].rec);
-          }
-        });
-        return deduped;
+  // Deduplicate records by CALL, preferring the most complete
+  function dedupeRecords(records){
+    const groups = new Map();
+    records.forEach((rec, idx) => {
+      const callField = rec.fields.find(f => f.tag && f.tag.toUpperCase() === 'CALL');
+      const call = callField ? String(callField.value).trim().toUpperCase() : null;
+      const filled = rec.fields.reduce((n, f) => n + (String(f.value || '').trim().length > 0 ? 1 : 0), 0);
+      if(!call){
+        const key = `__NO_CALL_${idx}`;
+        groups.set(key, [{rec, filled, call: null}]);
+      } else {
+        if(!groups.has(call)) groups.set(call, []);
+        groups.get(call).push({rec, filled, call});
       }
+    });
+    const deduped = [];
+    groups.forEach((arr, key) => {
+      if(arr.length === 1){
+        deduped.push(arr[0].rec);
+      } else {
+        arr.sort((a, b) => b.filled - a.filled);
+        deduped.push(arr[0].rec);
+      }
+    });
+    return deduped;
+  }
     let i = 0;
     const N = text.length;
     const header = [];
@@ -146,43 +146,7 @@ window.addEventListener('unhandledrejection', e => console.error('Unhandled reje
   }
 
   // Build ADIF: header lines, then one line per record (tags concatenated) ending with <EOR>
-  function buildADIF(parsed, parkRef){
-    const lines = [];
-    const header = parsed.header || [];
-    const records = parsed.records || [];
 
-    // header tags (preserve order) but skip EOH marker when copying
-    let hasPota = header.some(h => h.tag && h.tag.toUpperCase() === 'POTA_REF');
-    header.forEach(h => {
-      if(!h.tag) return;
-      if(h.tag.toUpperCase() === 'EOH') return; // skip here; we'll add EOH after header
-      const v = h.value || '';
-      lines.push(`<${h.tag}:${String(v).length}>${v}`);
-    });
-    if(!hasPota && parkRef){
-      lines.push(`<POTA_REF:${parkRef.length}>${parkRef}`);
-    }
-    lines.push('<EOH>');
-
-    // For each record, ensure POTA_REF present and output one line containing all tags
-    records.forEach(rec => {
-      const fields = rec.fields.slice(); // array of {tag,value}
-      // check if POTA_REF exists
-      const has = fields.some(f => f.tag.toUpperCase() === 'POTA_REF');
-      if(parkRef && !has){
-        fields.push({tag: 'POTA_REF', value: parkRef});
-      }
-      // build single-line record: concatenate each tag:value then append <EOR>
-      const recordParts = fields.map(f => {
-        const v = f.value || '';
-        return `<${f.tag}:${String(v).length}>${v}`;
-      });
-      const line = recordParts.join('') + '<EOR>';
-      lines.push(line);
-    });
-
-    return lines.join('\n') + '\n';
-  }
 
   // --- Map/Globe support: Maidenhead -> lat/lon ---
 
@@ -392,15 +356,12 @@ window.addEventListener('unhandledrejection', e => console.error('Unhandled reje
     console.log('processBtn clicked');
     const file = fileInput.files && fileInput.files[0];
     if(file) console.log('Selected file:', file.name, 'size:', file.size);
-    const parkRef = (parkRefInput.value || '').trim();
-    if(!file){ log('No file selected'); return; }
-    if(!parkRef){ log('Warning: no park ref provided — ADIF will be created without POTA_REF'); }
+    if(!file) return;
     const reader = new FileReader();
     reader.onload = function(e){
-      console.log('file loaded into memory, calling handleFile');
-      handleFile(String(e.target.result), parkRef);
+      handleFile(String(e.target.result));
     };
-    reader.onerror = function(ev){ console.error('FileReader error', ev); log('Error reading file'); };
+    reader.onerror = function(ev){ console.error('FileReader error', ev); };
     reader.readAsText(file);
   });
 
