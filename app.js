@@ -125,7 +125,7 @@ function renderGlobe(contacts) {
   if (!el) return;
   if (!globe) {
     globe = Globe()(el)
-      .globeImageUrl('https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg')
+      .globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg')
       .backgroundColor('rgba(0,0,0,0)')
       .showGraticules(true)
       .arcColor(() => '#ffd700')
