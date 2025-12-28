@@ -148,7 +148,8 @@ function renderGlobe(contacts) {
         .polygonCapColor(f => f.properties && f.properties._layer === 'state' ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0.04)')
         .polygonSideColor(() => 'rgba(0,0,0,0)')
         .polygonStrokeColor(f => f.properties && f.properties._layer === 'state' ? '#cccccc' : '#888')
-        .polygonAltitude(f => f.properties && f.properties._layer === 'state' ? 0.004 : 0.003);
+        .polygonAltitude(f => f.properties && f.properties._layer === 'state' ? 0.004 : 0.003)
+        .polygonsTransitionDuration(0);
       // Mark polygons loaded and always re-apply arcs/points
       globe.__polygonsLoaded = true;
       if (globe.__pendingPoints) globe.pointsData(globe.__pendingPoints);
