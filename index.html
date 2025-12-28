@@ -69,6 +69,20 @@
       justify-content: center;
     }
   </style>
+    <style>
+      /* Subtle star field background for space effect */
+      body::before {
+        content: '';
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: 0;
+        pointer-events: none;
+        background: repeating-radial-gradient(circle at 20% 30%, #fff2 0, #fff0 2px, #000 3px, #000 100%),
+                    repeating-radial-gradient(circle at 70% 80%, #fff1 0, #fff0 1.5px, #000 2.5px, #000 100%),
+                    repeating-radial-gradient(circle at 50% 50%, #fff3 0, #fff0 1.2px, #000 2px, #000 100%);
+        opacity: 0.7;
+      }
+    </style>
 </head>
 <body>
   <div id="container">
