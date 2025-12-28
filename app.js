@@ -125,7 +125,7 @@ function renderGlobe(contacts) {
   if (!el) return;
   if (!globe) {
     globe = Globe()(el)
-      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
+      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
       .backgroundColor('rgba(0,0,0,0)')
       .showGraticules(true)
       .arcColor(() => '#ffd700')
