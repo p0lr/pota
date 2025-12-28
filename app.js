@@ -93,8 +93,7 @@ window.addEventListener('unhandledrejection', e => console.error('Unhandled reje
           i = nextLT;
         }
       }
-
-          parsed.records = dedupeRecords(parsed.records);
+      if(inHeader){
         header.push({tag, value});
       } else {
         currentFields.push({tag, value});
