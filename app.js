@@ -125,7 +125,7 @@ function renderGlobe(contacts) {
   if (!el) return;
   if (!globe) {
     globe = Globe()(el)
-      .globeImageUrl('https://eoimages.gsfc.nasa.gov/images/imagerecords/74000/74192/world.topo.bathy.200412.3x5400x2700.jpg')
+      .globeImageUrl('https://raw.githubusercontent.com/roblabs/earth-globe-textures/main/2_no_clouds_4k.png')
       .backgroundColor('rgba(0,0,0,0)')
       .showGraticules(true)
       .arcColor(() => '#ffd700')
