@@ -137,9 +137,10 @@ function renderGlobe(contacts) {
       .pointRadius('size');
   }
   const arcs = [];
-  const pointsMap = new Map();
+  const points = [];
   contacts.forEach(c => {
     if (!c.coord || !c.myCoord) return;
+    // Arc: gold, altitude 0
     arcs.push({
       startLat: c.myCoord.lat,
       startLng: c.myCoord.lon,
@@ -148,12 +149,11 @@ function renderGlobe(contacts) {
       color: '#ffd700',
       alt: 0
     });
-    const aKey = `${c.myCoord.lat.toFixed(6)}_${c.myCoord.lon.toFixed(6)}`;
-    if (!pointsMap.has(aKey)) pointsMap.set(aKey, { lat: c.myCoord.lat, lng: c.myCoord.lon, label: `My: ${c.myGrid}`, color: '#ff0000', size: 0.18 });
-    const bKey = `${c.coord.lat.toFixed(6)}_${c.coord.lon.toFixed(6)}`;
-    if (!pointsMap.has(bKey)) pointsMap.set(bKey, { lat: c.coord.lat, lng: c.coord.lon, label: `${c.call || ''} ${c.grid || ''}`, color: '#00ff00', size: 0.12 });
+    // Start point: red, altitude 0
+    points.push({ lat: c.myCoord.lat, lng: c.myCoord.lon, label: `My: ${c.myGrid}`, color: '#ff0000', size: 0.18, altitude: 0 });
+    // End point: green, altitude 0
+    points.push({ lat: c.coord.lat, lng: c.coord.lon, label: `${c.call || ''} ${c.grid || ''}`, color: '#00ff00', size: 0.12, altitude: 0 });
   });
-  const points = Array.from(pointsMap.values());
   globe.pointsData(points);
   globe.arcsData(arcs);
   if (points.length) {
