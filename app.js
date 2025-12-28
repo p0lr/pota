@@ -150,10 +150,12 @@ function renderGlobe(contacts) {
         .polygonStrokeColor(f => f.properties && f.properties._layer === 'state' ? '#cccccc' : '#888')
         .polygonAltitude(f => f.properties && f.properties._layer === 'state' ? 0.004 : 0.003)
         .polygonsTransitionDuration(0);
-      // Mark polygons loaded and always re-apply arcs/points
+      // Always set points first, then arcs last after polygons
       globe.__polygonsLoaded = true;
       if (globe.__pendingPoints) globe.pointsData(globe.__pendingPoints);
-      if (globe.__pendingArcs) globe.arcsData(globe.__pendingArcs);
+      setTimeout(() => {
+        if (globe.__pendingArcs) globe.arcsData(globe.__pendingArcs);
+      }, 100);
     });
   }
   const arcs = [];
