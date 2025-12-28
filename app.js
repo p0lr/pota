@@ -312,11 +312,6 @@ window.addEventListener('unhandledrejection', e => console.error('Unhandled reje
       console.error('Globe render error', e);
     }
 
-    const parkPart = parkRef && parkRef.length ? parkRef.replace(/\s+/g,'') : 'NOPARK';
-    const out = buildADIF(parsed, parkRef);
-    preview.value = out;
-    const blobUrl = URL.createObjectURL(new Blob([out], {type:'text/plain'}));
-    downloadLink.href = blobUrl;
 
     // Filename format: CALLSIGN_YEAR-MONTH-DAY_PARK.adi
     const filename = `${stationCall}_${ymd.year}-${ymd.month}-${ymd.day}_${parkPart}.adi`;
