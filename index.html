@@ -3,32 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>POTA ADIF Prep</title>
+  <title>ADI Map</title>
   <link rel="stylesheet" href="styles.css">
   <meta name="description" content="Upload an ADI (.adi) file and add POTA park reference for POTA.app submission">
 </head>
 <body>
   <main class="container">
-    <h1>POTA ADIF Prep</h1>
+    <h1>ADI Map</h1>
 
-    <label class="field">
+    <div class="field" style="display: flex; align-items: center; gap: 0.5em;">
       <span>ADIF/.adi file</span>
       <input id="fileInput" type="file" accept=".adi,.adi.txt,text/plain" />
-    </label>
+      <button id="processBtn" type="button">Map</button>
+    </div>
 
 
 
     <!-- per-record MY_GRIDSQUARE values are used from the ADIF file; no manual input required -->
 
-    <div class="buttons">
-      <button id="processBtn">Process ADI</button>
-      <a id="downloadLink" class="hidden" download="pota_ready.adi">Download ADI</a>
-    </div>
 
-    <section>
-      <h2>Preview</h2>
-      <textarea id="preview" readonly></textarea>
-    </section>
+
+
 
     <section>
       <h2>Map</h2>
@@ -48,10 +43,7 @@
       </div>
     </section>
 
-    <section>
-      <h2>Logs</h2>
-      <pre id="log"></pre>
-    </section>
+
 
     <footer>
       <small>Generates ADIF with a header-level <code>POTA_REF</code> field and injects <code>POTA_REF</code> into each QSO record for POTA.app upload.</small>
