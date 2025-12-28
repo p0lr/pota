@@ -125,7 +125,7 @@ function renderGlobe(contacts) {
   if (!el) return;
   if (!globe) {
     globe = Globe()(el)
-      .globeImageUrl('https://raw.githubusercontent.com/roblabs/earth-globe-textures/main/2_no_clouds_4k.png')
+      .globeImageUrl('https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg')
       .backgroundColor('rgba(0,0,0,0)')
       .showGraticules(true)
       .arcColor(() => '#ffd700')
