@@ -136,6 +136,22 @@ function renderGlobe(contacts) {
       .pointAltitude(0)
       .pointColor('color')
       .pointRadius('size');
+
+    // Add country and US state boundaries using GeoJSON
+    Promise.all([
+      fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json').then(res => res.json()),
+      fetch('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json').then(res => res.json())
+    ]).then(([countries, states]) => {
+      // Tag features for styling
+      const countryFeatures = countries.features.map(f => { f.properties._layer = 'country'; return f; });
+      const stateFeatures = states.features.map(f => { f.properties._layer = 'state'; return f; });
+      const allFeatures = countryFeatures.concat(stateFeatures);
+      globe.polygonsData(allFeatures)
+        .polygonCapColor(f => f.properties && f.properties._layer === 'state' ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0.04)')
+        .polygonSideColor(() => 'rgba(0,0,0,0)')
+        .polygonStrokeColor(f => f.properties && f.properties._layer === 'state' ? '#cccccc' : '#888')
+        .polygonAltitude(f => f.properties && f.properties._layer === 'state' ? 0.004 : 0.003);
+    });
   }
   const arcs = [];
   const points = [];
