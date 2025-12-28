@@ -134,10 +134,17 @@ function renderGlobe(contacts) {
       .pointAltitude(0)
       .pointColor('color')
       .pointRadius('size');
-
-      // Only set points and arcs, no boundaries
-      if (globe.__pendingPoints) globe.pointsData(globe.__pendingPoints);
-      if (globe.__pendingArcs) globe.arcsData(globe.__pendingArcs);
+    // Responsive: set initial size
+    globe.width(window.innerWidth);
+    globe.height(window.innerHeight);
+    window.globe = globe;
+    // Only set points and arcs, no boundaries
+    if (globe.__pendingPoints) globe.pointsData(globe.__pendingPoints);
+    if (globe.__pendingArcs) globe.arcsData(globe.__pendingArcs);
+  } else {
+    // On re-render, update size in case of resize
+    globe.width(window.innerWidth);
+    globe.height(window.innerHeight);
   }
   const arcs = [];
   const points = [];
