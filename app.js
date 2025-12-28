@@ -37,7 +37,8 @@ function parseADIF(text) {
     }
     const m = raw.match(/^([^:]+)(?::(\d+))?/);
     if (!m) continue;
-    const tag = m[1].toUpperCase();
+    const tag = m[1];
+    const tagUpper = tag.toUpperCase();
     const len = m[2] ? parseInt(m[2], 10) : null;
     let value = '';
     if (len !== null) {
@@ -54,7 +55,7 @@ function parseADIF(text) {
       }
     }
     if (!inHeader) {
-      currentFields.push({ tag, value });
+      currentFields.push({ tag: tagUpper, value });
     }
   }
   if (currentFields.length > 0) {
@@ -67,7 +68,7 @@ function parseADIF(text) {
 function dedupeRecords(records) {
   const groups = new Map();
   records.forEach((rec, idx) => {
-    const callField = rec.fields.find(f => f.tag && f.tag.toUpperCase() === 'CALL');
+    const callField = rec.fields.find(f => f.tag && f.tag === 'CALL');
     const call = callField ? String(callField.value).trim().toUpperCase() : null;
     const filled = rec.fields.reduce((n, f) => n + (String(f.value || '').trim().length > 0 ? 1 : 0), 0);
     if (!call) {
@@ -182,9 +183,9 @@ mapBtn.addEventListener('click', () => {
   const records = parseADIF(fileText);
   const deduped = dedupeRecords(records);
   const contacts = deduped.map(rec => {
-    const gridField = rec.fields.find(f => f.tag && ['GRIDSQUARE', 'GRID', 'GRIDSQ'].includes(f.tag.toUpperCase()));
-    const callField = rec.fields.find(f => f.tag && f.tag.toUpperCase() === 'CALL');
-    const myGridField = rec.fields.find(f => f.tag && f.tag.toUpperCase() === 'MY_GRIDSQUARE');
+    const gridField = rec.fields.find(f => f.tag && ['GRIDSQUARE', 'GRID', 'GRIDSQ'].includes(f.tag));
+    const callField = rec.fields.find(f => f.tag && f.tag === 'CALL');
+    const myGridField = rec.fields.find(f => f.tag && f.tag === 'MY_GRIDSQUARE');
     const grid = gridField ? String(gridField.value).trim() : null;
     const call = callField ? String(callField.value).trim() : null;
     const myGrid = myGridField ? String(myGridField.value).trim() : null;
