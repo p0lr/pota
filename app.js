@@ -312,35 +312,6 @@ window.addEventListener('unhandledrejection', e => console.error('Unhandled reje
       console.error('Globe render error', e);
     }
 
-    // Determine a date: prefer QSO_DATE from first record, else header, else today
-    function extractDateFromRecord(rec){
-      const f = rec.fields.find(x => x.tag && x.tag.toUpperCase() === 'QSO_DATE');
-      if(!f || !f.value) return null;
-      const v = String(f.value).trim();
-      const m = v.match(/(\d{4})[-/]?(\d{2})[-/]?(\d{2})/);
-      if(m) return {year:m[1], month:m[2], day:m[3]};
-      return null;
-    }
-
-    let ymd = null;
-    if(parsed.records && parsed.records.length > 0){
-      ymd = extractDateFromRecord(parsed.records[0]);
-    }
-    if(!ymd){
-      const hdrDate = findHeaderTag(['QSO_DATE','DATE']);
-      if(hdrDate){
-        const m = String(hdrDate).match(/(\d{4})[-/]?(\d{2})[-/]?(\d{2})/);
-        if(m) ymd = {year:m[1], month:m[2], day:m[3]};
-      }
-    }
-    if(!ymd){
-      const dt = new Date();
-      const yy = dt.getFullYear();
-      const mm = String(dt.getMonth()+1).padStart(2,'0');
-      const dd = String(dt.getDate()).padStart(2,'0');
-      ymd = {year: String(yy), month: mm, day: dd};
-    }
-
     const parkPart = parkRef && parkRef.length ? parkRef.replace(/\s+/g,'') : 'NOPARK';
     const out = buildADIF(parsed, parkRef);
     preview.value = out;
